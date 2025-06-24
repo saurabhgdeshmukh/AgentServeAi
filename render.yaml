@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: agentserve-backend
+    env: python
+    region: oregon
+    branch: main
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn main:app -k uvicorn.workers.UvicornWorker
+    workingDir: python-server
+    autoDeploy: true
