@@ -25,7 +25,10 @@ app.add_middleware(
 # In-memory session memory: {session_id: [ {"role": "user"|"agent", "content": str}, ... ] }
 session_memory: Dict[str, List[dict]] = {}
 MEMORY_LIMIT = 10
-
+@app.get("/")
+def root():
+    return {"message": "Hello from Render"}
+    
 @app.post("/api/support")
 async def support_endpoint(request: Request):
     data = await request.json()
