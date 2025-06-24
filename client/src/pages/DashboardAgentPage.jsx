@@ -4,6 +4,7 @@ import MetricCard from "../components/MetricCard";
 import Icon from "../components/Icon";
 import { apiService } from "../services/api.js";
 import LanguageSelector from "../components/LanguageSelector";
+import { Link } from "react-router-dom";
 
 const DashboardAgentPage = () => {
   const [metrics, setMetrics] = useState({

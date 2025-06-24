@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
+  
   return (
     <nav className="bg-white shadow-lg border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,15 +16,27 @@ const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            <button
+              onClick={() => navigate('/')}
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              type="button"
+            >
               Home
-            </a>
-            <a href="/support" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            </button>
+            <button
+              onClick={() => navigate('/support')}
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              type="button"
+            >
               Support Agent
-            </a>
-            <a href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              type="button"
+            >
               Dashboard Agent
-            </a>
+            </button>
           </div>
 
           <div className="md:hidden flex items-center">
@@ -44,15 +58,27 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
-              <a href="/" className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
+              <button
+                onClick={() => { setIsMenuOpen(false); navigate('/'); }}
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
+                type="button"
+              >
                 Home
-              </a>
-              <a href="/support" className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
+              </button>
+              <button
+                onClick={() => { setIsMenuOpen(false); navigate('/support'); }}
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
+                type="button"
+              >
                 Support Agent
-              </a>
-              <a href="/dashboard" className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">
+              </button>
+              <button
+                onClick={() => { setIsMenuOpen(false); navigate('/dashboard'); }}
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
+                type="button"
+              >
                 Dashboard Agent
-              </a>
+              </button>
             </div>
           </div>
         )}

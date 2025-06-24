@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import ChatBox from '../components/ChatBox';
 import Icon from '../components/Icon';
 import LanguageSelector from '../components/LanguageSelector';
+import { Link } from 'react-router-dom';
 
 const SupportAgentPage = () => {
   const chatBoxRef = useRef(null);
