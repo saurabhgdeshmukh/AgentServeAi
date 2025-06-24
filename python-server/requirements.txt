@@ -20,12 +20,5 @@ requests
 # --- Environment Management ---
 python-dotenv
 
-# --- MongoDB (Required for mongo_query) ---
-pymongo
 
-# --- Typing Support & Utilities ---
-pydantic
-typing-extensions
 
-# --- Retry and async logic (used internally by langchain sometimes) ---
-tenacity
