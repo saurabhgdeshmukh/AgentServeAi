@@ -21,7 +21,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-[#d4f1fc] from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
-      <div className="text-center py-20 px-4">
+      <div className="text-center py-12 px-4">
         <h1 className="text-5xl font-bold text-gray-900 mb-6">
           Welcome to <span className="text-blue-600">AgentServe.AI</span>
         </h1>
@@ -46,26 +46,26 @@ const Home = () => {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+      <div className="max-w-6xl mx-auto px-4 py-4">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-5">
           Choose Your Agent
         </h2>
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-7">
           {features.map((feature, index) => (
             <Link
               key={index}
               to={feature.link}
-              className="group block"
+              className="group block h-full"
             >
-              <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="text-6xl mb-6">{feature.icon}</div>
+              <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col">
+               {/* <div className="text-6xl mb-6">{feature.icon}</div> */}
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-6 flex-grow">
                   {feature.description}
                 </p>
-                <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
+                <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700 mt-auto">
                   Get Started
                   <svg className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />

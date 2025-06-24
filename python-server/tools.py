@@ -2,7 +2,7 @@ from langchain.tools import tool
 import mock_data
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 try:
     from sentence_transformers import SentenceTransformer, util
     _has_st = True
@@ -11,17 +11,17 @@ except ImportError:
     SentenceTransformer = None
     util = None
 
-@tool("MongoDBTool", return_direct=True)
+@tool("MongoDBTool")
 def mongo_query(input: str = None, **kwargs):
     """
-    Query mock MongoDB data using a MongoDB-style query or analytics queryType.
-    Input: JSON string or direct kwargs.
-    If 'queryType' is present, run analytics logic.
-    If 'collection' is present, run collection query logic.
+    MongoDB analytics and business metrics.
+    Input: JSON string with a 'queryType' field (e.g., 'revenue', 'outstandingPayments', etc.)
+    If 'queryType' is not present, falls back to collection-based query logic.
+    Always includes a 'result' key for analytics queries for agent compatibility.
     """
     import json
     from mock_data import clients, orders, payments, courses, classes, attendance
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     try:
         if input:
@@ -29,20 +29,87 @@ def mongo_query(input: str = None, **kwargs):
         else:
             params = kwargs
 
-        # --- Analytics logic (queryType) ---
         query_type = params.get("queryType")
-        if query_type:
-            now = datetime.now()
-            current_month = now.month
-            current_year = now.year
-            first_of_month = datetime(current_year, current_month, 1)
+        now = datetime.now()
+        current_month = now.month
+        current_year = now.year
+        first_of_month = datetime(current_year, current_month, 1)
 
-            if query_type == "revenue":
-                revenue = sum(p.get("amount", 0) for p in payments if p.get("status") == "paid")
-                return json.dumps({"success": True, "revenue": revenue, "currency": "USD"})
-            # ... (add other queryTypes as in your Node.js logic)
-            # e.g. monthlyRevenue, inactiveClients, etc.
-            return json.dumps({"success": False, "error": f"Unknown queryType: {query_type}"})
+        if query_type == "revenue":
+            revenue = sum(p.get("amount", 0) for p in payments if p.get("status") == "completed")
+            return json.dumps({"success": True, "revenue": revenue})
+        elif query_type == "outstandingPayments":
+            outstanding = sum(p.get("amount", 0) for p in payments if p.get("status") == "pending")
+            return json.dumps({"success": True, "outstandingPayments": outstanding, "result": outstanding})
+        elif query_type == "activeClients":
+            count = sum(1 for c in clients if c.get("status") == "active")
+            return json.dumps({"success": True, "activeClients": count, "result": count})
+        elif query_type == "inactiveClients":
+            count = sum(1 for c in clients if c.get("status") == "inactive")
+            return json.dumps({"success": True, "inactiveClients": count, "result": count})
+        elif query_type == "birthdayReminders":
+            today = datetime.now()
+            in_seven = today + timedelta(days=7)
+            reminders = [
+                {"name": c["name"], "birthday": c["birthday"]}
+                for c in clients
+                if c.get("birthday") and today.strftime("%m-%d") <= c["birthday"][5:] <= in_seven.strftime("%m-%d")
+            ]
+            return json.dumps({"success": True, "birthdayReminders": reminders, "result": reminders})
+        elif query_type == "newClientsThisMonth":
+            count = sum(1 for c in clients if c.get("created_at") and datetime.strptime(c["created_at"], "%Y-%m-%d") >= first_of_month)
+            return json.dumps({"success": True, "newClientsThisMonth": count, "result": count})
+        elif query_type == "enrollmentTrends":
+            enrollment_trends = {}
+            for o in orders:
+                if "created_at" in o:
+                    dt = datetime.strptime(o["created_at"], "%Y-%m-%d")
+                    key = f"{dt.year}-{dt.month:02d}"
+                    enrollment_trends.setdefault(key, 0)
+                    enrollment_trends[key] += 1
+            trends = [
+                {"month": k, "enrollments": v}
+                for k, v in sorted(enrollment_trends.items())
+            ]
+            return json.dumps({"success": True, "enrollmentTrends": trends, "result": trends})
+        elif query_type == "topServices":
+            service_counts = {}
+            for o in orders:
+                service = o.get("service")
+                if service:
+                    service_counts[service] = service_counts.get(service, 0) + 1
+            top_services = [
+                {"name": name, "enrollments": count}
+                for name, count in sorted(service_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+            ]
+            return json.dumps({"success": True, "topServices": top_services, "result": top_services})
+        elif query_type == "courseCompletionRates":
+            total_enrollments = len(orders)
+            completed_orders = sum(1 for o in orders if o.get("status") == "completed")
+            completion_rate = (completed_orders / total_enrollments * 100) if total_enrollments else 0
+            result_obj = {
+                "totalEnrollments": total_enrollments,
+                "completedOrders": completed_orders,
+                "completionRate": f"{completion_rate:.2f}%"
+            }
+            return json.dumps({"success": True, **result_obj, "result": result_obj})
+        elif query_type == "attendanceReports":
+            attendance_reports = {}
+            for a in attendance:
+                course = a.get("class")
+                if course:
+                    attendance_reports.setdefault(course, []).append(a.get("percentage", 0))
+            reports = [
+                {"class": k, "averageAttendance": sum(v)/len(v) if v else 0}
+                for k, v in attendance_reports.items()
+            ]
+            return json.dumps({"success": True, "attendanceReports": reports, "result": reports})
+        elif query_type == "dropOffRates":
+            drop_off_rates = [
+                {"class": c["name"], "rate": c.get("drop_off_rate", 0)}
+                for c in classes if "drop_off_rate" in c
+            ]
+            return json.dumps({"success": True, "dropOffRates": drop_off_rates, "result": drop_off_rates})
 
         # --- Collection logic (existing) ---
         data_map = {
@@ -77,7 +144,7 @@ def mongo_query(input: str = None, **kwargs):
     except Exception as e:
         return json.dumps({"success": False, "error": str(e)})
 
-@tool("ExternalAPITool", return_direct=True)
+@tool("ExternalAPITool")
 def external_api(data: str):
     """Create new clients or orders via the external API."""
     try:
@@ -112,7 +179,7 @@ else:
     import torch
     corpus_embeddings = torch.empty((0, 384))  # 384 is the embedding size for MiniLM
 
-@tool("RAGTool", return_direct=True)
+@tool("RAGTool")
 def rag_tool(query: str):
     """Retrieve relevant context from courses, classes, and client notes for a given query."""
     if not _has_st:
@@ -130,7 +197,7 @@ def rag_tool(query: str):
         results.append({"meta": meta, "text": text, "score": float(score)})
     return json.dumps({"success": True, "results": results})
 
-@tool("MongoDBTool", return_direct=True)
+@tool("MongoDBTool")
 def mongo_db_tool(input: str):
     """
     MongoDB aggregation for analytics and business metrics.

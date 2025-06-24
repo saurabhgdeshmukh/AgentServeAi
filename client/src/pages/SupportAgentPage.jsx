@@ -61,28 +61,6 @@ const SupportAgentPage = () => {
           <ChatBox agentType="support" selectedLanguage={selectedLanguage} />
         </div>
         
-        {/* Quick Actions */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
-              <button 
-                key={index}
-                onClick={() => handleQuickAction(action.query)}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left group"
-              >
-                <div className="mb-2">
-                  <Icon src={action.icon} alt={action.title} className="w-8 h-8" />
-                </div>
-                <h4 className="font-medium text-gray-900">{action.title}</h4>
-                <p className="text-sm text-gray-600">{action.description}</p>
-                <div className="mt-2 text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Click to ask: "{action.query}"
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Sample Queries */}
         <div className="mt-8 bg-blue-50 rounded-lg p-6">
@@ -111,29 +89,6 @@ const SupportAgentPage = () => {
             </div>
             <div className="bg-white p-3 rounded border border-blue-200">
               <p className="text-sm text-blue-800">"Create a new client with name 'Jane Doe' and email 'jane@example.com'"</p>
-            </div>
-          </div>
-          
-          {/* Memory Examples */}
-          <div className="mt-6 pt-6 border-t border-blue-200">
-            <h4 className="text-md font-semibold text-blue-900 mb-3">🧠 Memory Context Examples:</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-white p-3 rounded border border-purple-200">
-                <p className="text-sm text-purple-800">1. "Find client John Smith"</p>
-                <p className="text-xs text-purple-600 mt-1">Then ask: "What orders does he have?"</p>
-              </div>
-              <div className="bg-white p-3 rounded border border-purple-200">
-                <p className="text-sm text-purple-800">2. "Show me order #12345"</p>
-                <p className="text-xs text-purple-600 mt-1">Then ask: "Has it been paid?"</p>
-              </div>
-              <div className="bg-white p-3 rounded border border-purple-200">
-                <p className="text-sm text-purple-800">3. "Get details for Yoga Beginner course"</p>
-                <p className="text-xs text-purple-600 mt-1">Then ask: "When are the next classes?"</p>
-              </div>
-              <div className="bg-white p-3 rounded border border-purple-200">
-                <p className="text-sm text-purple-800">4. "Find client with email priya@example.com"</p>
-                <p className="text-xs text-purple-600 mt-1">Then ask: "Create an order for her"</p>
-              </div>
             </div>
           </div>
           

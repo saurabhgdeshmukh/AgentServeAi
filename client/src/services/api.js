@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 // Generate a unique session ID for this browser session
 const generateSessionId = () => {
@@ -62,11 +62,9 @@ export const apiService = {
   async getSupportedLanguages() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/languages`);
-      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
       return data;
     } catch (error) {
@@ -102,11 +100,9 @@ export const apiService = {
   async getMemoryStats() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/memory/stats`);
-      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
       return data;
     } catch (error) {
@@ -115,10 +111,10 @@ export const apiService = {
     }
   },
 
+  // Get memory context for a specific session and agent type
   async getMemoryContext(sessionId, agentType) {
     try {
-      const session = sessionId || generateSessionId();
-      const response = await fetch(`${API_BASE_URL}/api/memory/context/${session}/${agentType}`);
+      const response = await fetch(`${API_BASE_URL}/api/memory/context/${sessionId}/${agentType}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -132,21 +128,23 @@ export const apiService = {
     }
   },
 
-  async clearMemory(sessionId, agentType) {
+  // Clear memory for all sessions
+  async clearMemory() {
     try {
-      const session = sessionId || generateSessionId();
-      const response = await fetch(`${API_BASE_URL}/api/memory/clear/${session}/${agentType}`, {
-        method: 'DELETE'
+      const response = await fetch(`${API_BASE_URL}/api/memory/clear`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
       });
-      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Memory Clear API Error:', error);
+      console.error('Clear Memory API Error:', error);
       throw error;
     }
   },
@@ -168,6 +166,21 @@ export const apiService = {
       return response.ok;
     } catch (error) {
       return false;
+    }
+  },
+
+  // Get dashboard metrics
+  async getMetrics() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/metrics`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Metrics API Error:', error);
+      throw error;
     }
   }
 }; 

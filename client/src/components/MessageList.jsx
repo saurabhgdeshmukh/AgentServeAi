@@ -30,32 +30,6 @@ const MessageList = ({ messages, isLoading }) => {
             }`}
           >
             <div className="text-sm">{message.text}</div>
-            
-            {/* Multilingual Info for Agent Messages */}
-            {message.sender === 'agent' && message.multilingualInfo && (
-              <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
-                <div className="text-xs text-blue-700 space-y-1">
-                  {message.multilingualInfo.detectedLanguage !== 'en' && (
-                    <div>
-                      <span className="font-medium">🌍 Detected:</span> {message.multilingualInfo.detectedLanguage.toUpperCase()}
-                    </div>
-                  )}
-                  {message.multilingualInfo.responseLanguage !== 'en' && (
-                    <div>
-                      <span className="font-medium">💬 Response:</span> {message.multilingualInfo.responseLanguage.toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            
-            <div
-              className={`text-xs mt-1 ${
-                message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
-              }`}
-            >
-              {message.timestamp}
-            </div>
           </div>
         </div>
       ))}

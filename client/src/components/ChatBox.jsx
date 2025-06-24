@@ -1,40 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import MemoryContext from './MemoryContext';
 import { apiService } from '../services/api.js';
 
-const ChatBox = ({ agentType = 'support', selectedLanguage = 'en' }) => {
+const ChatBox = forwardRef(({ agentType = 'support', selectedLanguage = 'en' }, ref) => {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState('checking');
   const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Initialize session ID
+ 
+  
   useEffect(() => {
     setSessionId(apiService.getCurrentSessionId());
-  }, []);
-
-  // Check backend connection on component mount
-  useEffect(() => {
-    const checkConnection = async () => {
-      try {
-        const isConnected = await apiService.testConnection();
-        setConnectionStatus(isConnected ? 'connected' : 'disconnected');
-      } catch (error) {
-        setConnectionStatus('disconnected');
-      }
-    };
-    checkConnection();
   }, []);
 
   const sendMessage = async (message) => {
@@ -63,7 +42,7 @@ const ChatBox = ({ agentType = 'support', selectedLanguage = 'en' }) => {
         text: data.result || 'Sorry, I could not process your request.',
         sender: 'agent',
         timestamp: new Date().toLocaleTimeString(),
-        multilingualInfo: data.multilingualInfo
+        // multilingualInfo: data.multilingualInfo // Remove or update if not present
       };
 
       setMessages(prev => [...prev, agentMessage]);
@@ -82,6 +61,11 @@ const ChatBox = ({ agentType = 'support', selectedLanguage = 'en' }) => {
     }
   };
 
+  // Expose sendMessage function to parent component
+  useImperativeHandle(ref, () => ({
+    sendMessage
+  }));
+
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
       {/* Chat Header */}
@@ -98,27 +82,9 @@ const ChatBox = ({ agentType = 'support', selectedLanguage = 'en' }) => {
               }
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded-full ${
-              connectionStatus === 'connected' ? 'bg-green-400' : 
-              connectionStatus === 'checking' ? 'bg-yellow-400' : 'bg-red-400'
-            }`}></div>
-            <span className="text-xs text-blue-100">
-              {connectionStatus === 'connected' ? 'Connected' : 
-               connectionStatus === 'checking' ? 'Checking...' : 'Disconnected'}
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* Memory Context */}
-      <div className="border-b border-gray-200 p-2">
-        <MemoryContext 
-          agentType={agentType} 
-          sessionId={sessionId}
-          className="text-xs"
-        />
-      </div>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4">
@@ -132,6 +98,8 @@ const ChatBox = ({ agentType = 'support', selectedLanguage = 'en' }) => {
       </div>
     </div>
   );
-};
+});
+
+ChatBox.displayName = 'ChatBox';
 
 export default ChatBox; 
