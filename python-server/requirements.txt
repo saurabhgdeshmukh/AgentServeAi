@@ -1,7 +1,9 @@
 fastapi
 uvicorn
 langchain==0.1.14
-crewai==0.22.6
+crewai
 google-generativeai
 python-dotenv
 sentence-transformers
+httpx
+torch
