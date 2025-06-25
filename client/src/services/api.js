@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://c41a-44-212-68-56.ngrok-free.app';
 
 // Generate a unique session ID for this browser session
 const generateSessionId = () => {
@@ -61,11 +61,23 @@ export const apiService = {
   // Get supported languages
   async getSupportedLanguages() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/languages`);
+      const url = `${API_BASE_URL}/api/languages`;
+      console.log('Languages API URL:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+      console.log('Languages API Response:', response); 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const responseText = await response.text();
+      console.log('Languages API Response Text:', responseText);
+      const data = JSON.parse(responseText);
+      // console.log(data)
       return data;
     } catch (error) {
       console.error('Languages API Error:', error);
@@ -99,7 +111,13 @@ export const apiService = {
   // Memory management APIs
   async getMemoryStats() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/memory/stats`);
+      const response = await fetch(`${API_BASE_URL}/api/memory/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -114,7 +132,13 @@ export const apiService = {
   // Get memory context for a specific session and agent type
   async getMemoryContext(sessionId, agentType) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/memory/context/${sessionId}/${agentType}`);
+      const response = await fetch(`${API_BASE_URL}/api/memory/context/${sessionId}/${agentType}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -162,7 +186,13 @@ export const apiService = {
   // Test connection
   async testConnection() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/health`);
+      const response = await fetch(`${API_BASE_URL}/api/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       return response.ok;
     } catch (error) {
       return false;
@@ -172,11 +202,21 @@ export const apiService = {
   // Get dashboard metrics
   async getMetrics() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/metrics`);
+      const url = `${API_BASE_URL}/api/metrics`;
+      console.log('Metrics API URL:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const responseText = await response.text();
+      console.log('Metrics API Response Text:', responseText);
+      const data = JSON.parse(responseText);
       return data;
     } catch (error) {
       console.error('Metrics API Error:', error);
